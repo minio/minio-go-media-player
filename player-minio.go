@@ -8,31 +8,21 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"time"
 )
 
 var (
 	addr = flag.String("http", ":8080", "http listen address")
+
+	bucket          = flag.String("b", "", "bucket name for operations on the object storage")
+	endpoint        = flag.String("e", "s3.amazonaws.com", "object storage endpoint, defaults to amazon s3")
+	enable_insecure = flag.Bool("i", false, "false for https connection, true for http only")
 )
 
-// STORAGE options.
-// STORAGE = "s3.amazonaws.com" if s3 is used.
-// STORAGE = "localhost:<port>" for testing on localhost Minio server.
-// STORAGE = "<IP Address>:<port>i" for testing on remote Minio server.
-
-// ACCESSKEYID = "<Your Access KEY ID of S3/Minio service>"
-// SECRETACCESSKEY = "<Your Secret Key of S3/Minio service>"
-// BUCKET_NAME = "<Your-Bucket-Name">
-// ENABLE_INSECURE = true , for http only connection.
-// ENABLE_INSECURE = false, for https connection.
-const (
-	// points to S3 by default.
-	STORAGE         = "s3.amazonaws.com"
-	ACCESSKEYID     = ""
-	SECRETACCESSKEY = ""
-	BUCKET_NAME     = ""
-	// set to false by default.
-	ENABLE_INSECURE = false
+var (
+	access_key = ""
+	secret_key = ""
 )
 
 // The playlist for the music player on the browser.
@@ -69,7 +59,7 @@ func getUrlQueryParam(r *http.Request, param string) string {
 
 // Get a presigned access URL for the given object for the specified ttl period.
 func getPreSignedUrl(storageClient *minio.Client, bucket, objectName string, ttl int, reqParams url.Values) (string, error) {
-	presignedURL, err := storageClient.PresignedGetObject(BUCKET_NAME, objectName, time.Duration(ttl)*time.Second, reqParams)
+	presignedURL, err := storageClient.PresignedGetObject(bucket, objectName, time.Duration(ttl)*time.Second, reqParams)
 	if err != nil {
 		return "", err
 	}
@@ -77,46 +67,51 @@ func getPreSignedUrl(storageClient *minio.Client, bucket, objectName string, ttl
 }
 
 // returns a new client for s3/Minio operations.
-func newStorageClient(storage, accessKey, secretKey string, enableInsecure bool) (*minio.Client, error) {
-	storageClient, err := minio.New(storage, accessKey, secretKey, enableInsecure)
+func newStorageClient(endpoint, accessKey, secretKey string, enableInsecure bool) (*minio.Client, error) {
+	storageClient, err := minio.New(endpoint, accessKey, secretKey, enableInsecure)
 	if err != nil {
 		return nil, err
 	}
 	return storageClient, nil
 }
 
+// asserts for empty string and logs a warning.
+func assertEmpty(value string, msg string) {
+	if value == "" {
+		log.Print(msg)
+	}
+}
+
 func main() {
 	flag.Parse()
+
+	access_key = os.Getenv("AWS_ACCESS_KEY")
+	secret_key = os.Getenv("AWS_SECRET_KEY")
+
+	assertEmpty(access_key, "Env variable 'AWS_ACCESS_KEY' not set")
+	assertEmpty(secret_key, "Env variable 'AWS_SECRET_KEY' not set")
+
 	// Handler to serve the index page containing the player.
-	http.HandleFunc("/", Index)
-	// For accessing the static content.
-	http.HandleFunc("/jplayer/", func(w http.ResponseWriter, r *http.Request) {
-		log.Print("serve static : " + r.URL.Path)
-		http.ServeFile(w, r, r.URL.Path[1:])
-	})
+	http.Handle("/", http.FileServer(http.Dir("./web")))
+
 	// End point for list object operation.
 	// Called when player in the front end is initialized.
 	http.HandleFunc("/list", ListObjects)
+
 	// Given point which recieves the object name and returns presigned URL in the response.
 	http.HandleFunc("/getpresign", GetPresignedURL)
 	http.ListenAndServe(*addr, nil)
 }
 
-// Handler serving the index page.
-func Index(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "./index.html")
-	log.Print("index page served")
-}
-
 // Handler for ListsObjects from the Object Storage server and bucket configured above.
 func ListObjects(w http.ResponseWriter, r *http.Request) {
-	storageClient, err := newStorageClient(STORAGE, ACCESSKEYID, SECRETACCESSKEY, ENABLE_INSECURE)
+	storageClient, err := newStorageClient(*endpoint, access_key, secret_key, *enable_insecure)
 	if err != nil {
 		log.Print(err)
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	objects, err := listObjectsFromBucket(storageClient, BUCKET_NAME)
+	objects, err := listObjectsFromBucket(storageClient, *bucket)
 	if err != nil {
 		log.Print(err)
 		http.Error(w, err.Error(), 500)
@@ -125,7 +120,7 @@ func ListObjects(w http.ResponseWriter, r *http.Request) {
 	// generating presigned url for the first object in the list.
 	// presigned URL will be generated on the fly for the other objects when they are played.
 	if len(objects) > 0 {
-		presignedURL, err := getPreSignedUrl(storageClient, BUCKET_NAME, objects[0].Key, 1000, nil)
+		presignedURL, err := getPreSignedUrl(storageClient, *bucket, objects[0].Key, 1000, nil)
 		// Gernerate presigned get object url.
 		if err != nil {
 			log.Print(err.Error())
@@ -143,13 +138,13 @@ func GetPresignedURL(w http.ResponseWriter, r *http.Request) {
 	// parameter from the client.
 	objectName := getUrlQueryParam(r, "objname")
 	// Set request parameters
-	storageClient, err := newStorageClient(STORAGE, ACCESSKEYID, SECRETACCESSKEY, ENABLE_INSECURE)
+	storageClient, err := newStorageClient(*endpoint, access_key, secret_key, *enable_insecure)
 	if err != nil {
 		log.Print(err)
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	presignedURL, err := getPreSignedUrl(storageClient, BUCKET_NAME, objectName, 1000, nil)
+	presignedURL, err := getPreSignedUrl(storageClient, *bucket, objectName, 1000, nil)
 	// Gernerate presigned get object url.
 	if err != nil {
 		log.Print(err.Error())

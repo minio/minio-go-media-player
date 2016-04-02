@@ -5,10 +5,10 @@
 
 <title>Minio Media Player</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<link href="jplayer/jplayer.pink.flag.min.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="jplayer/jquery.min.js"></script>
-<script type="text/javascript" src="jplayer/jquery.jplayer.min.js"></script>
-<script type="text/javascript" src="jplayer/jplayer.playlist.min.js"></script>
+<link href="assets/jplayer/jplayer.pink.flag.min.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="assets/jplayer/jquery.min.js"></script>
+<script type="text/javascript" src="assets/jplayer/jquery.jplayer.min.js"></script>
+<script type="text/javascript" src="assets/jplayer/jplayer.playlist.min.js"></script>
 <script type="text/javascript">
 //<![CDATA[
 $(document).ready(function() {
@@ -30,7 +30,7 @@ $(document).ready(function() {
                     title: response[i].Key,
                     artist: "",
                     mp3: response[i].URL,
-                    poster: "jplayer/image/minio.jpg"
+                    poster: "assets/jplayer/image/minio.jpg"
                 })
             }
             console.log(listObjects)
@@ -39,7 +39,7 @@ $(document).ready(function() {
                 jPlayer: "#jquery_jplayer_1",
                 cssSelectorAncestor: "#jp_container_1"
             }, listObjects, {
-                swfPath: "jplayer",
+                swfPath: "assets/jplayer",
                 solution: "flash, html",
                 supplied: "mp3",
                 useStateClassSkin: true,
