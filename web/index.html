@@ -17,15 +17,11 @@ $(document).ready(function() {
     // obtain the playlist form the server.
     $.ajax({
         type: 'GET',
-        url: '/list',
+        url: '/list/v1',
         datatype: 'json',
         success: function(data) {
-            console.info("inside sucess")
-
             var response = $.parseJSON(data)
-
             for (i in response) {
-
                 listObjects.push({
                     title: response[i].Key,
                     artist: "",
@@ -33,8 +29,7 @@ $(document).ready(function() {
                     poster: "assets/jplayer/image/minio.jpg"
                 })
             }
-            console.log(listObjects)
-                // create the player instance.
+            // create the player instance.
             new jPlayerPlaylist({
                 jPlayer: "#jquery_jplayer_1",
                 cssSelectorAncestor: "#jp_container_1"
@@ -53,18 +48,16 @@ $(document).ready(function() {
                     // start playing the first song in the list once loaded.
                     $player.jPlayer("play")
                     $(".jp-playlist-item").click(function(event) {
-                        console.log("click evnt captured");
                         // Obtaining the name of the currently active media.
                         var activeMedia = $(this).html()
-                        console.log(activeMedia)
-                            // Requesting server to generate the presigned URL for the currently active media.
+                        // Requesting server to generate the presigned URL for the currently active media.
                         $.ajax({
-                            url: "/getpresign",
+                            url: "/getpresign/v1",
                             datatype: 'json',
                             type: "get",
                             // Sending the Object name as request query param.
                             data: {
-                                objname: activeMedia,
+                                objName: activeMedia,
                             },
                             success: function(response) {
                                 // Setting the presigned URL as the media URL.
@@ -85,7 +78,7 @@ $(document).ready(function() {
                     // Obtaining the name of the currently active media.
                     var activeMedia = $("a.jp-playlist-current").html()
                     $.ajax({
-                        url: "/getpresign",
+                        url: "/getpresign/v1",
                         datatype: 'json',
                         type: "get",
                         data: {
