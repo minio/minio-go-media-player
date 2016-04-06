@@ -2,8 +2,8 @@
 HTML5 media player using [Minio-Go library](https://github.com/minio/minio-go).
 
  - [Prerequisites](#prerequisites)
- - [Downloading the sample code](#downloading-the-sample-code)
- - [Run the Sample Code](#run-the-sample-code)
+ - [Installing media-player](#installing-media-player)
+ - [Running media-player](#running-media-player)
  - [Additional links](#additional-links)
 
 ## Prerequisites
@@ -12,18 +12,18 @@ HTML5 media player using [Minio-Go library](https://github.com/minio/minio-go).
    [Click here for setting up Minio server](https://github.com/minio/minio#install-).
  - Keep your media files in the S3 or Minio bucket.
 
-## Downloading and installing code.
+## Installing media-player
 
-<blockquote>
 If you do not have a working Golang environment, please follow [Install Golang](./INSTALLGO.md).
-</blockquote>
 
 ```sh
 $ go get github.com/minio/minio-go-media-player/media-player
 ```
 
-## Running `media-player`.
-1. Set Access key and Secret key environment variables.
+## Running media-player
+
+### Environment variables.
+Set Access key and Secret key environment variables.
 
 - On `bash`
 ```
@@ -44,7 +44,17 @@ set AWS_ACCESS_KEY=your-access-key
 set AWS_SECRET_KEY=your-secret-key
 ```
 
-2.  Execute the following commands
+### Create bucket and copy media assets.
+
+Following example uses [mc(Minio Client)](https://github.com/minio/mc) to create a bucket.
+```sh
+$ mc mb <aliasname>/<bucket-name>
+$ mc cp Music/*.mp3 <aliasname>/<bucket-name>
+```
+
+### Run media player.
+
+Now we are all set to run the `media-player` example.
 
 ```sh
 $ media-player -b <bucket-name>
@@ -53,16 +63,20 @@ $ media-player -b <bucket-name>
 
 - `-b` sets the bucket name to use and its mandatory.
 
-- `-e` sets the endpoint, defaults to s3.amazonaws.com.
+### Optional arguments.
 
-Set a custom endpoint for example 'play.minio.io:9000' to use Minio public server.
+- Endpoint defaults to 's3.amazonaws.com', to set a custom endpoint use `-e`.
 
 ```sh
-$ media-player -b testbucket -e play.minio.io:9000
+$ media-player -b <bucket-name> -e play.minio.io:9000
 2016/04/02 17:24:54 Starting media player, please visit your browser at http://localhost:8080
 ```
 
-- `-i` By default we always make secure SSL connections, enable this option if your endpoint is on an insecure connection.
+- By default we always make secure SSL connections, enable insecure with `-i` option.
+
+```sh
+$ media-player -b <bucket-name> -e localhost:9000 -i
+```
 
 ## Additional Links
 - [Minio Go Library for Amazon S3 compatible cloud storage](www.github.com/minio/minio-go)
