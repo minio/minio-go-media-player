@@ -13,7 +13,7 @@ import (
 
 var (
 	bucketName = flag.String("b", "", "Bucket name to be used for media assets.")
-	endPoint   = flag.String("e", "s3.amazonaws.com", "Choose a custom endpoint.")
+	endPoint   = flag.String("e", "play.minio.io:9000", "Choose a custom endpoint.")
 	isInsecure = flag.Bool("i", false, "Choose for insecure connections.")
 )
 
