@@ -25,6 +25,12 @@ $ go get github.com/minio/minio-go-media-player/media-player
 ### Environment variables.
 Set Access key and Secret key environment variables.
 
+To set Access key and Secret key of the default endpoint `play.minio.io:9000` use 
+```
+export AWS_ACCESS_KEY=Q3AM3UQ867SPQQA43P2F
+export AWS_SECRET_KEY=zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
+```
+
 - On `bash`
 ```
 export AWS_ACCESS_KEY='your-access-key'
@@ -65,10 +71,10 @@ $ media-player -b <bucket-name>
 
 ### Optional arguments.
 
-- Endpoint defaults to 's3.amazonaws.com', to set a custom endpoint use `-e`.
-
+- Endpoint defaults to 'play.minio.io:9000', to set a custom endpoint use `-e`.
+- For example to set the endpoint to Amazon S3 use the following instruction.
 ```sh
-$ media-player -b <bucket-name> -e play.minio.io:9000
+$ media-player -b <bucket-name> -e s3.amazonaws.com 
 2016/04/02 17:24:54 Starting media player, please visit your browser at http://localhost:8080
 ```
 
