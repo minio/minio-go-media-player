@@ -141,7 +141,7 @@ func (api mediaHandlers) ListObjectsHandler(w http.ResponseWriter, r *http.Reque
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			playListEntry.URL = presignedURL
+			playListEntry.URL = presignedURL.String()
 		}
 		playListEntries = append(playListEntries, playListEntry)
 	}
@@ -168,5 +168,5 @@ func (api mediaHandlers) GetPresignedURLHandler(w http.ResponseWriter, r *http.R
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.Write([]byte(presignedURL))
+	w.Write([]byte(presignedURL.String()))
 }
