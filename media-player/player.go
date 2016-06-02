@@ -5,6 +5,7 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"time"
 
@@ -13,8 +14,7 @@ import (
 
 var (
 	bucketName = flag.String("b", "", "Bucket name to be used for media assets.")
-	endPoint   = flag.String("e", "play.minio.io:9000", "Choose a custom endpoint.")
-	isInsecure = flag.Bool("i", false, "Choose for insecure connections.")
+	endPoint   = flag.String("e", "https://play.minio.io:9000", "Choose a custom endpoint.")
 )
 
 // The mediaPlayList for the music player on the browser.
@@ -26,7 +26,7 @@ type mediaPlayList struct {
 
 // mediaHandlers media handlers.
 type mediaHandlers struct {
-	storageClient *minio.Client
+	minioClient *minio.Client
 }
 
 var supportedAccesEnvs = []string{
@@ -67,6 +67,24 @@ func mustGetAccessKeys() (accessKey, secretKey string) {
 	return accessKey, secretKey
 }
 
+// Finds out whether the url is http(insecure) or https(secure).
+func isSecure(urlStr string) bool {
+	u, err := url.Parse(urlStr)
+	if err != nil {
+		panic(err)
+	}
+	return u.Scheme == "https"
+}
+
+// Find the Host of the given url.
+func findHost(urlStr string) string {
+	u, err := url.Parse(urlStr)
+	if err != nil {
+		panic(err)
+	}
+	return u.Host
+}
+
 func main() {
 	flag.Parse()
 
@@ -79,14 +97,14 @@ func main() {
 	accessKey, secretKey := mustGetAccessKeys()
 
 	// Initialize minio client.
-	storageClient, err := minio.New(*endPoint, accessKey, secretKey, *isInsecure)
+	minioClient, err := minio.New(findHost(*endPoint), accessKey, secretKey, isSecure(*endPoint))
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	// Initialize media handlers with minio client.
 	mediaPlayer := mediaHandlers{
-		storageClient: storageClient,
+		minioClient: minioClient,
 	}
 
 	// Handler to serve the index page.
@@ -122,7 +140,7 @@ func (api mediaHandlers) ListObjectsHandler(w http.ResponseWriter, r *http.Reque
 	var isRecursive = true
 
 	// List all objects from a bucket-name with a matching prefix.
-	for objectInfo := range api.storageClient.ListObjects(*bucketName, "", isRecursive, doneCh) {
+	for objectInfo := range api.minioClient.ListObjects(*bucketName, "", isRecursive, doneCh) {
 		if objectInfo.Err != nil {
 			http.Error(w, objectInfo.Err.Error(), http.StatusInternalServerError)
 			return
@@ -136,7 +154,7 @@ func (api mediaHandlers) ListObjectsHandler(w http.ResponseWriter, r *http.Reque
 			// presigned URL will be generated on the fly for the
 			// other objects when they are played.
 			expirySecs := 1000 * time.Second // 1000 seconds.
-			presignedURL, err := api.storageClient.PresignedGetObject(*bucketName, objectName, expirySecs, nil)
+			presignedURL, err := api.minioClient.PresignedGetObject(*bucketName, objectName, expirySecs, nil)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -163,7 +181,7 @@ func (api mediaHandlers) GetPresignedURLHandler(w http.ResponseWriter, r *http.R
 		http.Error(w, "No object name set, invalid request.", http.StatusBadRequest)
 		return
 	}
-	presignedURL, err := api.storageClient.PresignedGetObject(*bucketName, objectName, 1000*time.Second, nil)
+	presignedURL, err := api.minioClient.PresignedGetObject(*bucketName, objectName, 1000*time.Second, nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

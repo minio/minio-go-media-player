@@ -71,18 +71,13 @@ $ media-player -b <bucket-name>
 
 ### Optional arguments.
 
-- Endpoint defaults to 'play.minio.io:9000', to set a custom endpoint use `-e`.
+- Endpoint defaults to 'https://play.minio.io:9000', to set a custom endpoint use `-e`.
 - For example to set the endpoint to Amazon S3 use the following instruction.
 ```sh
-$ media-player -b <bucket-name> -e s3.amazonaws.com 
+$ media-player -b <bucket-name> -e https://s3.amazonaws.com 
 2016/04/02 17:24:54 Starting media player, please visit your browser at http://localhost:8080
 ```
 
-- By default we always make secure SSL connections, enable insecure with `-i` option.
-
-```sh
-$ media-player -b <bucket-name> -e localhost:9000 -i
-```
 
 ## Additional Links
 - [Minio Go Library for Amazon S3 compatible cloud storage](www.github.com/minio/minio-go)

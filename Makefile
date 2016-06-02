@@ -5,7 +5,6 @@ checks:
 	@(env bash $(PWD)/buildscripts/checkgopath.sh)
 
 getdeps: checks
-	@go get -u golang.org/x/tools/cmd/vet && echo "Installed vet:"
 	@go get -u github.com/jteeuwen/go-bindata/... && echo "Installed go-bindata:"
 	@go get -u github.com/elazarl/go-bindata-assetfs/... && echo "Installed go-bindata-assetfs:"
 
