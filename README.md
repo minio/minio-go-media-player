@@ -4,7 +4,7 @@
 
  This document will guide you through the code to build a simple media player in Golang. In this app, we show you how to retrieve your media from Minio server. The media files inside a bucket are listed as the playlist, secure URLs are generated on demand whenever we play a song. Full code is available here: https://github.com/minio/minio-go-media-player, released under Apache 2.0 License.
 
- ## 1 Prerequisites
+## 1 Prerequisites
 * Install mc  from [here](https://docs.minio.io/docs/minio-client-quick-start-guide).
 * Install Minio Server from [here](https://docs.minio.io/docs/minio ).
 * A working Golang environment. If you do not have a working Golang environment, please follow - [How to install Golang?](/docs/how-to-install-golang)
