@@ -1,85 +1,136 @@
-## Minio Go media player.
-HTML5 media player using [Minio-Go library](https://github.com/minio/minio-go).
+# Go Music Player App
 
- - [Prerequisites](#prerequisites)
- - [Installing media-player](#installing-media-player)
- - [Running media-player](#running-media-player)
- - [Additional links](#additional-links)
+ ![Screenshot](./assets/1.png)
 
-## Prerequisites
+ This document will guide you through the code to build a simple media player in Golang. In this app, we show you how to retrieve your media from Minio server. The media files inside a bucket are listed as the playlist, secure URLs are generated on demand whenever we play a song. Full code is available here: https://github.com/minio/minio-go-media-player, released under Apache 2.0 License.
 
- - Amazon s3 account or a running instance of Minio Server.
-   [Click here for setting up Minio server](https://github.com/minio/minio#install-).
- - Keep your media files in the S3 or Minio bucket.
+ ## 1 Prerequisites
+* Install mc  from [here](https://docs.minio.io/docs/minio-client-quick-start-guide).
+* Install Minio Server from [here](https://docs.minio.io/docs/minio ).
+* A working Golang environment. If you do not have a working Golang environment, please follow - [How to install Golang?](/docs/how-to-install-golang)
 
-## Installing media-player
+## 2 Dependencies
+* Media files (mp3) for your playlist bucket.
 
-If you do not have a working Golang environment, please follow [Install Golang](./INSTALLGO.md).
+## 3 Installing `media-player`
+
+Let's go ahead and use 'go get' to fetch the example as shown below, 'go get' will install all necessary dependencies as needed.
 
 ```sh
-$ go get github.com/minio/minio-go-media-player/media-player
+$ go get -u github.com/minio/minio-go-media-player/media-player
 ```
+Now `media-player` is ready to be used.
+## 4 Running media-player
 
-## Running media-player
-
-### Environment variables.
+#### Environment Variables `bash`
 Set Access key and Secret key environment variables.
-
-To set Access key and Secret key of the default endpoint `play.minio.io:9000` use 
-```
-export AWS_ACCESS_KEY=Q3AM3UQ867SPQQA43P2F
-export AWS_SECRET_KEY=zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
-```
-
-- On `bash`
-```
-export AWS_ACCESS_KEY='your-access-key'
-export AWS_SECRET_KEY='your-secret-key'
-```
-
-- On `tcsh`
-```
-setenv AWS_ACCESS_KEY 'your-access-key'
-setenv AWS_SECRET_KEY 'your-secret-key'
-```
-
-- On windows command prompt.
-
-```
-set AWS_ACCESS_KEY=your-access-key
-set AWS_SECRET_KEY=your-secret-key
-```
-
-### Create bucket and copy media assets.
-
-Following example uses [mc(Minio Client)](https://github.com/minio/mc) to create a bucket.
 ```sh
-$ mc mb <aliasname>/<bucket-name>
-$ mc cp Music/*.mp3 <aliasname>/<bucket-name>
+$ export AWS_ACCESS_KEY=Q3AM3UQ867SPQQA43P2F
+$ export AWS_SECRET_KEY=zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
 ```
 
-### Run media player.
-
-Now we are all set to run the `media-player` example.
-
+#### Environment Variables `tcsh`
 ```sh
-$ media-player -b <bucket-name>
+$ setenv AWS_ACCESS_KEY Q3AM3UQ867SPQQA43P2F
+$ setenv AWS_SECRET_KEY zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
+```
+
+#### Environment Variables `Windows command prompt`
+```sh
+> set AWS_ACCESS_KEY=Q3AM3UQ867SPQQA43P2F
+> set AWS_SECRET_KEY=zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
+```
+
+
+
+### Set Up Bucket
+
+1. We've created a public minio server at https://play.minio.io:9000 for developers to use as a sandbox.  Create a bucket called `media-assets` on `play.minio.io:9000`. We are going to use `mc mb` command to accomplish this.
+ ```sh
+$ mc mb play/media-assets
+```
+2. Upload your media assets into this bucket. You can again use mc to do this. Let's move few mp3's from the local disk into the bucket we created on play.
+```sh
+$ mc cp ~/Music/*.mp3 play/media-assets
+```
+**Note** : We have already created a `media-assets` bucket on play.minio.io and copied the assets used in this example.
+
+### Run Media Player
+Now we are all set to run the `media-player` example. Use `-b` command line option to specify the bucket we have already created in the previous step.
+```sh
+$ cd $GOPATH/bin
+$ ./media-player -b media-assets
 2016/04/02 17:24:54 Starting media player, please visit your browser at http://localhost:8080
 ```
+Now if you visit http://localhost:8080  you should be able to see the example application.
 
-- `-b` sets the bucket name to use and its mandatory.
+### Optional Arguments
 
-### Optional arguments.
-
-- Endpoint defaults to 'https://play.minio.io:9000', to set a custom endpoint use `-e`.
-- For example to set the endpoint to Amazon S3 use the following instruction.
+1. Endpoint defaults to 'https://play.minio.io:9000', to set a custom endpoint use `-e
 ```sh
-$ media-player -b <bucket-name> -e https://s3.amazonaws.com 
+$ cd $GOPATH/bin
+$ ./media-player -b <bucket-name> -e https://s3.amazonaws.com
 2016/04/02 17:24:54 Starting media player, please visit your browser at http://localhost:8080
 ```
+2.  For using an endpoint as Minio server running locally.
+```sh
+ $ media-player -b <bucket-name> -e http://localhost:9000
+```
+## 5 Building Playlist
 
+The first thing the player does is build a playlist, by using [ListObjects](https://docs.minio.io/v1.0/docs/golang-api-reference#ListObjects) method, to lists all the media assets in the media bucket specified. These objects will be rendered as a playlist for the media player as shown in the player image above. Each object is collected and sent to the browser in JSON format.
 
-## Additional Links
-- [Minio Go Library for Amazon S3 compatible cloud storage](www.github.com/minio/minio-go)
-- [Minio Go API Reference](https://github.com/minio/minio-go/blob/master/API.md)
-- [More API examples](https://github.com/minio/minio-go#example)
+The following flow diagram and sample code provides an overview on how this is achieved.
+
+ ![Screenshot](./assets/2.png)
+
+ ```go
+ for objectInfo := range api.minioClient.ListObjects(*bucketName, "", isRecursive, doneCh) {
+  if objectInfo.Err != nil {
+		http.Error(w, objectInfo.Err.Error(), http.StatusInternalServerError)
+			return
+		}
+		objectName := objectInfo.Key // object name.
+		playListEntry := mediaPlayList{
+			Key: objectName,
+		}
+		playListEntries = append(playListEntries, playListEntry)
+	}
+	playListEntriesJSON, err := json.Marshal(playListEntries)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	// Successfully wrote play list in json.
+	w.Write(playListEntriesJSON)
+ ```
+## 6 Streaming Media
+
+When an user clicks to play media on the browser, secure URLs are generated on demand by the media player. In order to do this the player uses [PresignedGetObject](https://docs.minio.io/docs/golang-client-api-reference#PresignedGetObject).
+
+The secure URL generated by PresignedGetObject is used by the player to stream the media from the server directly. The following flow diagram and sample code provide an overview on how this is achieved.
+
+ ![Screenshot](./assets/3.png)
+
+ ```go
+ // GetPresignedURLHandler - generates presigned access URL for an object.
+func (api mediaHandlers) GetPresignedURLHandler(w http.ResponseWriter, r *http.Request) {
+	// The object for which the presigned URL has to be generated is sent as a query
+	// parameter from the client.
+	objectName := r.URL.Query().Get("objName")
+	if objectName == "" {
+		http.Error(w, "No object name set, invalid request.", http.StatusBadRequest)
+		return
+	}
+	presignedURL, err := api.storageClient.PresignedGetObject(*bucketName, objectName, 1000*time.Second, nil)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write([]byte(presignedURL))
+}
+ ```
+## 7 Explore Further
+
+- [Using `minio-go` client SDK with Minio Server](/docs/golang-client-quickstart-guide)
+- [Minio Golang Client SDK API Reference](/docs/golang-client-api-reference)
