@@ -4,15 +4,15 @@
 
  This document will guide you through the code to build a simple media player in Golang. In this app, we show you how to retrieve your media from Minio server. The media files inside a bucket are listed as the playlist, secure URLs are generated on demand whenever we play a song. Full code is available here: https://github.com/minio/minio-go-media-player, released under Apache 2.0 License.
 
-## 1 Prerequisites
+## 1. Prerequisites
 * Install mc  from [here](https://docs.minio.io/docs/minio-client-quick-start-guide).
 * Install Minio Server from [here](https://docs.minio.io/docs/minio ).
 * A working Golang environment. If you do not have a working Golang environment, please follow - [How to install Golang?](/docs/how-to-install-golang)
 
-## 2 Dependencies
+## 2. Dependencies
 * Media files (mp3) for your playlist bucket.
 
-## 3 Installing `media-player`
+## 3. Installing `media-player`
 
 Let's go ahead and use 'go get' to fetch the example as shown below, 'go get' will install all necessary dependencies as needed.
 
@@ -20,7 +20,7 @@ Let's go ahead and use 'go get' to fetch the example as shown below, 'go get' wi
 $ go get -u github.com/minio/minio-go-media-player/media-player
 ```
 Now `media-player` is ready to be used.
-## 4 Running media-player
+## 4. Running media-player
 
 #### Environment Variables `bash`
 Set Access key and Secret key environment variables.
@@ -76,8 +76,9 @@ $ ./media-player -b <bucket-name> -e https://s3.amazonaws.com
 ```sh
  $ media-player -b <bucket-name> -e http://localhost:9000
 ```
-## 5 Building Playlist
 
+
+## 5. Building Playlist
 The first thing the player does is build a playlist, by using [ListObjects](https://docs.minio.io/v1.0/docs/golang-api-reference#ListObjects) method, to lists all the media assets in the media bucket specified. These objects will be rendered as a playlist for the media player as shown in the player image above. Each object is collected and sent to the browser in JSON format.
 
 The following flow diagram and sample code provides an overview on how this is achieved.
@@ -104,7 +105,7 @@ The following flow diagram and sample code provides an overview on how this is a
 	// Successfully wrote play list in json.
 	w.Write(playListEntriesJSON)
  ```
-## 6 Streaming Media
+## 6. Streaming Media
 
 When an user clicks to play media on the browser, secure URLs are generated on demand by the media player. In order to do this the player uses [PresignedGetObject](https://docs.minio.io/docs/golang-client-api-reference#PresignedGetObject).
 
@@ -130,7 +131,7 @@ func (api mediaHandlers) GetPresignedURLHandler(w http.ResponseWriter, r *http.R
 	w.Write([]byte(presignedURL))
 }
  ```
-## 7 Explore Further
+## 7. Explore Further
 
 - [Using `minio-go` client SDK with Minio Server](/docs/golang-client-quickstart-guide)
 - [Minio Golang Client SDK API Reference](/docs/golang-client-api-reference)
