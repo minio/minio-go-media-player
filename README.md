@@ -6,7 +6,7 @@
 
 ## 1. Prerequisites
 
-* Install mc  from [here](https://docs.minio.io/docs/minio-client-quick-start-guide).
+* Install mc  from [here](https://docs.minio.io/docs/minio-client-quickstart-guide).
 * Install Minio Server from [here](https://docs.minio.io/docs/minio ).
 * A working Golang environment. If you do not have a working Golang environment, please follow - [How to install Golang?](https://docs.minio.io/docs/how-to-install-golang).
 
@@ -117,7 +117,7 @@ $ ./media-player -b <bucket-name> -e https://s3.amazonaws.com
 
 ## 5. Building Playlist
 
-The first thing the player does is build a playlist, by using [ListObjects](https://docs.minio.io/docs/golang-api-reference#ListObjects) method, to lists all the media assets in the media bucket specified. These objects will be rendered as a playlist for the media player as shown in the player image above. Each object is collected and sent to the browser in JSON format.
+The first thing the player does is build a playlist, by using [ListObjects](https://docs.minio.io/docs/golang-client-api-reference#ListObjects) method, to lists all the media assets in the media bucket specified. These objects will be rendered as a playlist for the media player as shown in the player image above. Each object is collected and sent to the browser in JSON format.
 
 The following flow diagram and sample code provides an overview on how this is achieved.
 
