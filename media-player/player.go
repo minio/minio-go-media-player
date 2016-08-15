@@ -114,7 +114,7 @@ func main() {
 	// Called when player in the front end is initialized.
 	http.HandleFunc("/list/v1", mediaPlayer.ListObjectsHandler)
 
-	// Given point which recieves the object name and returns presigned URL in the response.
+	// Given point which receives the object name and returns presigned URL in the response.
 	http.HandleFunc("/getpresign/v1", mediaPlayer.GetPresignedURLHandler)
 
 	log.Println("Starting media player, please visit your browser at http://localhost:8080")
