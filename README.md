@@ -22,7 +22,7 @@
 Let's go ahead and use 'go get' to fetch the example as shown below, 'go get' will install all necessary dependencies as needed.
 
 
-```sh
+```
 
 $ go get -u github.com/minio/minio-go-media-player/media-player
 
@@ -36,7 +36,7 @@ Now `media-player` is ready to be used.
 
 Set Access key and Secret key environment variables.
 
-```sh
+```
 
 $ export AWS_ACCESS_KEY=Q3AM3UQ867SPQQA43P2F
 $ export AWS_SECRET_KEY=zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
@@ -45,7 +45,7 @@ $ export AWS_SECRET_KEY=zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
 
 #### Environment Variables `tcsh`
 
-```sh
+```
 
 $ setenv AWS_ACCESS_KEY Q3AM3UQ867SPQQA43P2F
 $ setenv AWS_SECRET_KEY zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
@@ -54,7 +54,7 @@ $ setenv AWS_SECRET_KEY zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
 
 #### Environment Variables `Windows command prompt`
 
-```sh
+```
 
 > set AWS_ACCESS_KEY=Q3AM3UQ867SPQQA43P2F
 > set AWS_SECRET_KEY=zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
@@ -67,14 +67,14 @@ $ setenv AWS_SECRET_KEY zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
 
 1. We've created a public minio server at https://play.minio.io:9000 for developers to use as a sandbox.  Create a bucket called `media-assets` on `play.minio.io:9000`. We are going to use `mc mb` command to accomplish this.
 
- ```sh
+ ```
 
 $ mc mb play/media-assets
 
 ```
 2. Upload your media assets into this bucket. You can again use mc to do this. Let's move few mp3's from the local disk into the bucket we created on play.
 
-```sh
+```
 
 $ mc cp ~/Music/*.mp3 play/media-assets
 
@@ -85,7 +85,7 @@ $ mc cp ~/Music/*.mp3 play/media-assets
 
 Now we are all set to run the `media-player` example. Use `-b` command line option to specify the bucket we have already created in the previous step.
 
-```sh
+```
 
 $ cd $GOPATH/bin
 $ ./media-player -b media-assets
@@ -98,7 +98,7 @@ Now if you visit http://localhost:8080  you should be able to see the example ap
 
 1. Endpoint defaults to 'https://play.minio.io:9000', to set a custom endpoint use `-e
 
-```sh
+```
 
 $ cd $GOPATH/bin
 $ ./media-player -b <bucket-name> -e https://s3.amazonaws.com
@@ -108,7 +108,7 @@ $ ./media-player -b <bucket-name> -e https://s3.amazonaws.com
 
 2.  For using an endpoint as Minio server running locally.
 
-```sh
+```
 
  $ media-player -b <bucket-name> -e http://localhost:9000
 
