@@ -24,7 +24,7 @@ Let's go ahead and use 'go get' to fetch the example as shown below, 'go get' wi
 
 ```sh
 
-$ go get -u github.com/minio/minio-go-media-player/media-player
+go get -u github.com/minio/minio-go-media-player/media-player
 
 ```
 
@@ -38,8 +38,8 @@ Set Access key and Secret key environment variables.
 
 ```sh
 
-$ export AWS_ACCESS_KEY=Q3AM3UQ867SPQQA43P2F
-$ export AWS_SECRET_KEY=zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
+export AWS_ACCESS_KEY=Q3AM3UQ867SPQQA43P2F
+export AWS_SECRET_KEY=zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
 
 ```
 
@@ -47,8 +47,8 @@ $ export AWS_SECRET_KEY=zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
 
 ```sh
 
-$ setenv AWS_ACCESS_KEY Q3AM3UQ867SPQQA43P2F
-$ setenv AWS_SECRET_KEY zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
+setenv AWS_ACCESS_KEY Q3AM3UQ867SPQQA43P2F
+setenv AWS_SECRET_KEY zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
 
 ```
 
@@ -56,8 +56,8 @@ $ setenv AWS_SECRET_KEY zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
 
 ```sh
 
-> set AWS_ACCESS_KEY=Q3AM3UQ867SPQQA43P2F
-> set AWS_SECRET_KEY=zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
+set AWS_ACCESS_KEY=Q3AM3UQ867SPQQA43P2F
+set AWS_SECRET_KEY=zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
 
 ```
 
@@ -69,14 +69,14 @@ $ setenv AWS_SECRET_KEY zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
 
  ```sh
 
-$ mc mb play/media-assets
+mc mb play/media-assets
 
 ```
 2. Upload your media assets into this bucket. You can again use mc to do this. Let's move few mp3's from the local disk into the bucket we created on play.
 
 ```sh
 
-$ mc cp ~/Music/*.mp3 play/media-assets
+mc cp ~/Music/*.mp3 play/media-assets
 
 ```
 **Note** : We have already created a `media-assets` bucket on play.minio.io and copied the assets used in this example.
@@ -87,8 +87,8 @@ Now we are all set to run the `media-player` example. Use `-b` command line opti
 
 ```sh
 
-$ cd $GOPATH/bin
-$ ./media-player -b media-assets
+cd $GOPATH/bin
+./media-player -b media-assets
 2016/04/02 17:24:54 Starting media player, please visit your browser at http://localhost:8080
 
 ```
@@ -100,8 +100,8 @@ Now if you visit http://localhost:8080  you should be able to see the example ap
 
 ```sh
 
-$ cd $GOPATH/bin
-$ ./media-player -b <bucket-name> -e https://s3.amazonaws.com
+cd $GOPATH/bin
+./media-player -b <bucket-name> -e https://s3.amazonaws.com
 2016/04/02 17:24:54 Starting media player, please visit your browser at http://localhost:8080
 
 ```
@@ -110,7 +110,7 @@ $ ./media-player -b <bucket-name> -e https://s3.amazonaws.com
 
 ```sh
 
- $ media-player -b <bucket-name> -e http://localhost:9000
+media-player -b <bucket-name> -e http://localhost:9000
 
 ```
 
