@@ -1,4 +1,4 @@
-# Go Music Player App [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/minio/minio?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+# Go Music Player App [![Slack](https://slack.minio.io/slack?type=svg)](https://slack.minio.io)
 
 ![minio_GO1](https://github.com/minio/minio-go-media-player/blob/master/docs/screenshots/minio-go1.jpg?raw=true)
 
