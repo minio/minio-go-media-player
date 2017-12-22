@@ -7,7 +7,7 @@
 ## 1. Prerequisites
 
 * Install mc  from [here](https://docs.minio.io/docs/minio-client-quickstart-guide).
-* Install Minio Server from [here](https://docs.minio.io/docs/minio ).
+* Install Minio Server from [here](https://minio.io/downloads/#minio-server).
 * A working Golang environment. If you do not have a working Golang environment, please follow - [How to install Golang?](https://docs.minio.io/docs/how-to-install-golang).
 
 ## 2. Dependencies
